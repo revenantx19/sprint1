@@ -57,7 +57,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             value = "SELECT COUNT(t.product_id) AS product_count FROM transactions t " +
                     "JOIN products p ON t.product_id = p.id " +
                     "WHERE t.user_id = :userId AND t.type = 'DEPOSIT' " +
-                    "AND (p.type = 'DEBIT' OR p.type = 'SAVING' AND t.amount > 10000)"
+                    "AND (p.type = 'DEBIT' OR p.type = 'SAVING') AND t.amount > 10000"
     )
     Integer findAmountOfInvestedDebitProductsOrSavingProductsMoreThan10000(UUID userId);
 

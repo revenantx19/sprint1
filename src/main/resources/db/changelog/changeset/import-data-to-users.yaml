@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/changeset/import-data-to-users.yaml
+  - changeSet:
+      id: 001_import_csv_to_users
+      author: nikita_malinkin
+      changes:
+        - loadData:
+            columns:
+              - column:
+                  index: 1
+                  name: id
+              - column:
+                  index: 2
+                  name: registration_date
+              - column:
+                  index: 3
+                  name: user_name
+              - column:
+                  index: 4
+                  name: first_name
+              - column:
+                  index: 5
+                  name: last_name
+            tableName: users
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
+            file: "db/changelog/csv/users.csv"
