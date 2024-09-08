@@ -19,7 +19,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "registration_date")
     private LocalDateTime registrationDate;
     private String userName;
     private String firstName;

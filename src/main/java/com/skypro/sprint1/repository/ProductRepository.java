@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                     "AND t.type = 'DEPOSIT' AND amount <= 1000",
             nativeQuery = true
     )
-    Integer findAmountOfInvestedSavingProductsOfUser(UUID userId);
+    Integer findAmountOfDepositSavingProductsOfUser(UUID userId);
 
     // ПРАВИЛА SAVING
 
@@ -59,7 +60,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                     "WHERE t.user_id = :userId AND t.type = 'DEPOSIT' " +
                     "AND (p.type = 'DEBIT' OR p.type = 'SAVING') AND t.amount > 10000"
     )
-    Integer findAmountOfInvestedDebitProductsOrSavingProductsMoreThan10000(UUID userId);
+    Integer findAmountOfInvestedDebitOrSavingProductsMoreThan10000(UUID userId);
 
 
     // 3. Сумма пополнений по всем продуктам типа DEBIT > суммы трат по тем же продуктам.
@@ -112,4 +113,21 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     )
     Integer findSumOfDebitWithdrawalProductsByUser(UUID userId);
 
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM products WHERE type = 'INVEST'"
+    )
+    List<Product> findAllInvestProducts();
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM products WHERE type = 'SAVING'"
+    )
+    List<Product> findAllSavingProducts();
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM products WHERE type = 'CREDIT'"
+    )
+    List<Product> findAllCreditProducts();
 }
