@@ -1,12 +1,12 @@
 package com.skypro.sprint1.repository;
 
+import com.skypro.sprint1.model.PriceSum;
 import com.skypro.sprint1.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -68,22 +68,22 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     // 3.1 Сначала найду суммы пополнений по каждому продукту
     @Query(
             nativeQuery = true,
-            value = "SELECT t.product_id, SUM(t.amount) AS product_sum FROM transactions t " +
+            value = "SELECT t.product_id AS productId, SUM(t.amount) AS productSum FROM transactions t " +
                     "JOIN products p ON t.product_id = p.id " +
                     "WHERE t.user_id = :userId AND t.type = 'DEPOSIT' AND p.type = 'DEBIT' " +
                     "GROUP BY t.product_id"
     )
-    Map<UUID, Integer> findDebitDepositSumByProduct(UUID userId);
+    List<PriceSum> findDebitDepositSumByProduct(UUID userId);
 
     // 3.2 Теперь найду сумму трат
     @Query(
             nativeQuery = true,
-            value = "SELECT t.product_id, SUM(t.amount) AS product_sum FROM transactions t " +
+            value = "SELECT t.product_id AS productId, SUM(t.amount) AS productSum FROM transactions t " +
                     "JOIN products p ON t.product_id = p.id " +
                     "WHERE t.user_id = :userId AND t.type = 'WITHDRAWAL' AND p.type = 'DEBIT' " +
                     "GROUP BY t.product_id"
     )
-    Map<UUID, Integer> findDebitWithdrawalSumByProduct(UUID userId);
+    List<PriceSum> findDebitWithdrawalSumByProduct(UUID userId);
 
     // ПРАВИЛА CREDIT
 

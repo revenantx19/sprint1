@@ -1,5 +1,6 @@
 package com.skypro.sprint1.service.impl;
 
+import com.skypro.sprint1.model.PriceSum;
 import com.skypro.sprint1.model.Product;
 import com.skypro.sprint1.model.Recommendation;
 import com.skypro.sprint1.model.UserRecommendation;
@@ -88,16 +89,29 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
 
     //Проверка на то, у пользователя сумма пополнений по всем продуктам типа DEBIT > суммы трат по тем же продуктам
     private boolean isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(UUID userId) {
-        Map<UUID, Integer> debit = productRepository.findDebitDepositSumByProduct(userId);
-        Map<UUID, Integer> withdrawal = productRepository.findDebitWithdrawalSumByProduct(userId);
+
+        List<PriceSum> deposit = productRepository.findDebitDepositSumByProduct(userId);
+        List<PriceSum> withdrawal = productRepository.findDebitWithdrawalSumByProduct(userId);
+
+        Map<UUID, Integer> depositMap = new HashMap<>();
+
+        for (PriceSum priceSum : deposit) {
+            depositMap.put(priceSum.getProductId(), priceSum.getProductSum());
+        }
+
+        Map<UUID, Integer> withdrawalMap = new HashMap<>();
+
+        for (PriceSum priceSum : withdrawal) {
+            withdrawalMap.put(priceSum.getProductId(), priceSum.getProductSum());
+        }
 
         int totalSum = 0;
 
-        for (Map.Entry<UUID, Integer> entry : debit.entrySet()) {
-            if (withdrawal.containsKey(entry.getKey())) {
-                int debitAmount = entry.getValue();
-                int withdrawalAmount = withdrawal.get(entry.getKey());
-                totalSum += debitAmount - withdrawalAmount;
+        for (Map.Entry<UUID, Integer> entry : depositMap.entrySet()) {
+            if (withdrawalMap.containsKey(entry.getKey())) {
+                int depositAmount = entry.getValue();
+                int withdrawalAmount = withdrawalMap.get(entry.getKey());
+                totalSum += depositAmount - withdrawalAmount;
             }
         }
 
