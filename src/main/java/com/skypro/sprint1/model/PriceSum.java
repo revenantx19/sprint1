@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface PriceSum {
     UUID getProductId();
-    Integer getProductSum();
+    Long getProductSum();
 }

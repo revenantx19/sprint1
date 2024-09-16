@@ -1,4 +1,4 @@
-package com.skypro.sprint1.model;
+package com.skypro.sprint1.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

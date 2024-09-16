@@ -5,28 +5,29 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Entity
+@Entity(name = "transactions")
+@Data
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
-@Table(name = "transactions")
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
     private UUID userId;
     private UUID productId;
-    private Integer amount;
+    private Long amount;
 
-    public Transaction(String type, UUID userId, UUID productId, Integer amount) {
+    public Transaction(TransactionType type, UUID userId, UUID productId, Long amount) {
         this.type = type;
         this.userId = userId;
         this.productId = productId;
         this.amount = amount;
+    }
+
+    public enum TransactionType {
+        DEPOSIT, WITHDRAWAL
     }
 }

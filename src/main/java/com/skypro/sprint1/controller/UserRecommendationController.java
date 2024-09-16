@@ -1,6 +1,6 @@
 package com.skypro.sprint1.controller;
 
-import com.skypro.sprint1.model.UserRecommendation;
+import com.skypro.sprint1.pojo.UserRecommendation;
 import com.skypro.sprint1.service.UserRecommendationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,13 +23,19 @@ public class UserRecommendationController {
         this.userRecommendationService = userRecommendationService;
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<UserRecommendation> getRecommendations(@PathVariable(name = "user_id") UUID userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserRecommendation> getRecommendations(@PathVariable UUID userId) {
         UserRecommendation userRecommendation = userRecommendationService.getRecommendations(userId);
         if (userRecommendation == null) {
             log.warn("Recommendations are not needed");
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(userRecommendation);
+    }
+
+    @GetMapping("/by-rules/{userId}")
+    public ResponseEntity<UserRecommendation> getRecommendationsByRules(@PathVariable UUID userId) {
+        Optional<UserRecommendation> userRecommendation = userRecommendationService.getRecommendationsByRules(userId);
+        return userRecommendation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

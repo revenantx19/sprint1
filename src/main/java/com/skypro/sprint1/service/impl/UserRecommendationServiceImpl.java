@@ -2,9 +2,12 @@ package com.skypro.sprint1.service.impl;
 
 import com.skypro.sprint1.model.PriceSum;
 import com.skypro.sprint1.model.Product;
-import com.skypro.sprint1.model.Recommendation;
-import com.skypro.sprint1.model.UserRecommendation;
+import com.skypro.sprint1.model.RecommendationRule;
+import com.skypro.sprint1.model.RuleExecutioner;
+import com.skypro.sprint1.pojo.Recommendation;
+import com.skypro.sprint1.pojo.UserRecommendation;
 import com.skypro.sprint1.repository.ProductRepository;
+import com.skypro.sprint1.repository.RecommendationRuleRepository;
 import com.skypro.sprint1.service.UserRecommendationService;
 import com.skypro.sprint1.util.RecommendationMessageUtil;
 import org.springframework.stereotype.Service;
@@ -15,9 +18,35 @@ import java.util.*;
 public class UserRecommendationServiceImpl implements UserRecommendationService {
 
     private final ProductRepository productRepository;
+    private final RecommendationRuleRepository ruleRepository;
+    private final RuleExecutioner ruleExecutioner;
 
-    public UserRecommendationServiceImpl(ProductRepository productRepository) {
+    public UserRecommendationServiceImpl(ProductRepository productRepository,
+                                         RecommendationRuleRepository ruleRepository,
+                                         RuleExecutioner ruleExecutioner) {
         this.productRepository = productRepository;
+        this.ruleRepository = ruleRepository;
+        this.ruleExecutioner = ruleExecutioner;
+    }
+
+    @Override
+    public Optional<UserRecommendation> getRecommendationsByRules(UUID userId) {
+        List<RecommendationRule> rules = ruleRepository.findAll();
+
+        List<Recommendation> recommendations = new ArrayList<>();
+
+        for (RecommendationRule rule : rules) {
+            if (ruleExecutioner.execute(userId, rule.getRule())) {
+                Recommendation recommendation = formRecommendation(rule);
+                recommendations.add(recommendation);
+            }
+        }
+
+        if (recommendations.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new UserRecommendation(userId, recommendations));
     }
 
     // Формирование рекомендаций для пользователя
@@ -63,6 +92,10 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
 
     }
 
+    private Recommendation formRecommendation(RecommendationRule rule) {
+        return new Recommendation(rule.getProductName(), rule.getProductId(), rule.getProductDescription());
+    }
+
     // Проверка на то, что пользователь использует продукт типа DEBIT
     private boolean isUserHaveDebitProduct(UUID userId) {
         Integer countDebitProducts = productRepository.findAmountOfDebitProductsOfUser(userId);
@@ -93,29 +126,39 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
         List<PriceSum> deposit = productRepository.findDebitDepositSumByProduct(userId);
         List<PriceSum> withdrawal = productRepository.findDebitWithdrawalSumByProduct(userId);
 
-        Map<UUID, Integer> depositMap = new HashMap<>();
+        Map<UUID, Long> depositMap = new HashMap<>();
 
         for (PriceSum priceSum : deposit) {
             depositMap.put(priceSum.getProductId(), priceSum.getProductSum());
         }
 
-        Map<UUID, Integer> withdrawalMap = new HashMap<>();
+        long totalSum = getTotalSum(withdrawal, depositMap);
+
+        return totalSum > 0;
+    }
+
+    public static long getTotalSum(List<PriceSum> withdrawal, Map<UUID, Long> depositMap) {
+        Map<UUID, Long> withdrawalMap = new HashMap<>();
 
         for (PriceSum priceSum : withdrawal) {
             withdrawalMap.put(priceSum.getProductId(), priceSum.getProductSum());
         }
 
-        int totalSum = 0;
+        long totalSum = 0;
 
-        for (Map.Entry<UUID, Integer> entry : depositMap.entrySet()) {
+        totalSum = getTotalSum(depositMap, withdrawalMap, totalSum);
+        return totalSum;
+    }
+
+    public static long getTotalSum(Map<UUID, Long> depositMap, Map<UUID, Long> withdrawalMap, long totalSum) {
+        for (Map.Entry<UUID,Long> entry : depositMap.entrySet()) {
             if (withdrawalMap.containsKey(entry.getKey())) {
-                int depositAmount = entry.getValue();
-                int withdrawalAmount = withdrawalMap.get(entry.getKey());
+                long depositAmount = entry.getValue();
+                long withdrawalAmount = withdrawalMap.get(entry.getKey());
                 totalSum += depositAmount - withdrawalAmount;
             }
         }
-
-        return totalSum > 0;
+        return totalSum;
     }
 
     // Проверка на то, что пользователь использует продукт типа CREDIT
@@ -126,7 +169,7 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
 
     // Проверка на то, что сумма трат по всем продуктам типа DEBIT за три месяца > 100 000 ₽.
     private boolean isWithdrawalSumOnDebitProductsMoreThan100000(UUID userId) {
-        Integer sum = productRepository.findSumOfDebitWithdrawalProductsByUser(userId);
+        Long sum = productRepository.findSumOfDebitWithdrawalProductsByUser(userId);
         return sum > 100000;
     }
 

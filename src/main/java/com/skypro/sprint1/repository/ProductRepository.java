@@ -111,7 +111,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
                     "JOIN products p ON t.product_id = p.id " +
                     "WHERE t.user_id = :userId AND p.type = 'DEBIT' AND t.type = 'WITHDRAWAL'"
     )
-    Integer findSumOfDebitWithdrawalProductsByUser(UUID userId);
+   Long findSumOfDebitWithdrawalProductsByUser(UUID userId);
 
     @Query(
             nativeQuery = true,
