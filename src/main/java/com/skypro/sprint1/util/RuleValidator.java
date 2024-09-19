@@ -2,10 +2,7 @@ package com.skypro.sprint1.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-
-import static com.skypro.sprint1.model.Product.ProductType;
 
 
 @Slf4j
@@ -51,7 +48,7 @@ public class RuleValidator {
 
 
     private static boolean validateProductType(String productType) {
-        return EnumUtils.isValidEnum(ProductType.class, productType);
+        return productType.equals("DEBIT") || productType.equals("CREDIT") || productType.equals("INVEST") || productType.equals("SAVING");
     }
 
     private static boolean validateNumberAndProductType(String number, String productType) {

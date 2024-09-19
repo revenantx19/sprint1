@@ -20,9 +20,9 @@ public class RecommendationRuleController {
     }
 
     @PostMapping
-    public ResponseEntity<RecommendationRule> createRule(@RequestParam RecommendationRule rule) {
-        Optional<RecommendationRule> recommendationRule = recommendationRuleService.createRule(rule);
-        return recommendationRule.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<RecommendationRule> createRule(@RequestBody RecommendationRule recommendationRule) {
+        Optional<RecommendationRule> rule = recommendationRuleService.createRule(recommendationRule);
+        return rule.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{ruleId}")

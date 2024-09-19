@@ -33,7 +33,7 @@ public class RecommendationRuleServiceImpl implements RecommendationRuleService 
         }
 
         log.info("Saving rule {}", rule.getRule());
-        return Optional.of(recommendationRuleRepository.save(new RecommendationRule()));
+        return Optional.of(recommendationRuleRepository.save(rule));
     }
 
     @Override

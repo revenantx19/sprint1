@@ -6,9 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity(name = "users")
-@Data
+@Entity
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
