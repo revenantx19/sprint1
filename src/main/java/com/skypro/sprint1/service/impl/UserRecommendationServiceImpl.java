@@ -1,7 +1,6 @@
 package com.skypro.sprint1.service.impl;
 
 import com.skypro.sprint1.model.PriceSum;
-import com.skypro.sprint1.model.Product;
 import com.skypro.sprint1.model.RecommendationRule;
 import com.skypro.sprint1.model.RuleExecutioner;
 import com.skypro.sprint1.pojo.Recommendation;
@@ -9,7 +8,7 @@ import com.skypro.sprint1.pojo.UserRecommendation;
 import com.skypro.sprint1.repository.ProductRepository;
 import com.skypro.sprint1.repository.RecommendationRuleRepository;
 import com.skypro.sprint1.service.UserRecommendationService;
-import com.skypro.sprint1.util.RecommendationMessageUtil;
+import com.skypro.sprint1.util.RecommendationProductUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,8 +28,39 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
         this.ruleExecutioner = ruleExecutioner;
     }
 
+
+    // Формирование рекомендаций для пользователя
     @Override
-    public Optional<UserRecommendation> getRecommendationsByRules(UUID userId) {
+    public Optional<UserRecommendation> getRecommendations(UUID userId) {
+        List<Recommendation> recommendations = new ArrayList<>();
+
+        if (recommendInvestProduct(userId)) {
+            Recommendation recommendation = RecommendationProductUtil.getInvestProduct();
+            recommendations.add(recommendation);
+        }
+
+        if (recommendSavingProduct(userId)) {
+            Recommendation recommendation = RecommendationProductUtil.getSavingProduct();
+            recommendations.add(recommendation);
+        }
+
+        if (recommendCreditProduct(userId)) {
+            Recommendation recommendation = RecommendationProductUtil.getCreditProduct();
+            recommendations.add(recommendation);
+        }
+
+        recommendations.addAll(getRecommendationsByRules(userId));
+
+        if (recommendations.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new UserRecommendation(userId, recommendations));
+
+    }
+
+    // Рекомендации по введенным правилам
+    private List<Recommendation> getRecommendationsByRules(UUID userId) {
         List<RecommendationRule> rules = ruleRepository.findAll();
 
         List<Recommendation> recommendations = new ArrayList<>();
@@ -42,54 +72,7 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
             }
         }
 
-        if (recommendations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(new UserRecommendation(userId, recommendations));
-    }
-
-    // Формирование рекомендаций для пользователя
-    @Override
-    public UserRecommendation getRecommendations(UUID userId) {
-        List<Recommendation> recommendations = new ArrayList<>();
-
-        if (recommendInvestProduct(userId)) {
-            Product investProduct = getRandomInvestProduct();
-            Recommendation recommendation = new Recommendation(
-                    investProduct.getName(),
-                    investProduct.getId(),
-                    RecommendationMessageUtil.INVEST_MESSAGE
-            );
-            recommendations.add(recommendation);
-        }
-
-        if (recommendSavingProduct(userId)) {
-            Product savingProduct = getRandomSavingProduct();
-            Recommendation recommendation = new Recommendation(
-                    savingProduct.getName(),
-                    savingProduct.getId(),
-                    RecommendationMessageUtil.SAVING_MESSAGE
-            );
-            recommendations.add(recommendation);
-        }
-
-        if (recommendCreditProduct(userId)) {
-            Product creditProduct = getRandomCreditProduct();
-            Recommendation recommendation = new Recommendation(
-                    creditProduct.getName(),
-                    creditProduct.getId(),
-                    RecommendationMessageUtil.CREDIT_MESSAGE
-            );
-            recommendations.add(recommendation);
-        }
-
-        if (recommendations.isEmpty()) {
-            return null;
-        }
-
-        return new UserRecommendation(userId, recommendations);
-
+        return recommendations;
     }
 
     private Recommendation formRecommendation(RecommendationRule rule) {
@@ -194,28 +177,5 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
                 && isWithdrawalSumOnDebitProductsMoreThan100000(userId);
     }
 
-    // Получение случайного продукта типа INVEST для рекомендации пользователю
-    private Product getRandomInvestProduct() {
-        List<Product> investProducts = productRepository.findAllInvestProducts();
-        Random random = new Random();
-        int value = random.nextInt(investProducts.size());
-        return investProducts.get(value);
-    }
-
-    // Получение случайного продукта типа SAVING для рекомендации пользователю
-    private Product getRandomSavingProduct() {
-        List<Product> savingProducts = productRepository.findAllSavingProducts();
-        Random random = new Random();
-        int value = random.nextInt(savingProducts.size());
-        return savingProducts.get(value);
-    }
-
-    // Получение случайного продукта типа CREDIT для рекомендации пользователю
-    private Product getRandomCreditProduct() {
-        List<Product> creditProducts = productRepository.findAllCreditProducts();
-        Random random = new Random();
-        int value = random.nextInt(creditProducts.size());
-        return creditProducts.get(value);
-    }
 
 }

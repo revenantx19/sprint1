@@ -6,6 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRecommendationService {
-    UserRecommendation getRecommendations(UUID userId);
-    Optional<UserRecommendation> getRecommendationsByRules(UUID userId);
+    Optional<UserRecommendation> getRecommendations(UUID userId);
+
 }

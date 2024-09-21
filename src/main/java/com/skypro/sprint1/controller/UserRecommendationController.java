@@ -25,17 +25,12 @@ public class UserRecommendationController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserRecommendation> getRecommendations(@PathVariable UUID userId) {
-        UserRecommendation userRecommendation = userRecommendationService.getRecommendations(userId);
-        if (userRecommendation == null) {
+        Optional<UserRecommendation> userRecommendation = userRecommendationService.getRecommendations(userId);
+        if (userRecommendation.isEmpty()) {
             log.warn("Recommendations are not needed");
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(userRecommendation);
+        return ResponseEntity.ok(userRecommendation.get());
     }
 
-    @GetMapping("/by-rules/{userId}")
-    public ResponseEntity<UserRecommendation> getRecommendationsByRules(@PathVariable UUID userId) {
-        Optional<UserRecommendation> userRecommendation = userRecommendationService.getRecommendationsByRules(userId);
-        return userRecommendation.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
 }
