@@ -113,21 +113,4 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     )
    Long findSumOfDebitWithdrawalProductsByUser(UUID userId);
 
-    @Query(
-            nativeQuery = true,
-            value = "SELECT * FROM products WHERE type = 'INVEST'"
-    )
-    List<Product> findAllInvestProducts();
-
-    @Query(
-            nativeQuery = true,
-            value = "SELECT * FROM products WHERE type = 'SAVING'"
-    )
-    List<Product> findAllSavingProducts();
-
-    @Query(
-            nativeQuery = true,
-            value = "SELECT * FROM products WHERE type = 'CREDIT'"
-    )
-    List<Product> findAllCreditProducts();
 }
