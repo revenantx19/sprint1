@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+/*
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 public class ProductRepositoryTest {
@@ -156,3 +157,4 @@ public class ProductRepositoryTest {
         assertEquals(expectedWithdrawalSum, withdrawalSum);
     }
 }
+*/

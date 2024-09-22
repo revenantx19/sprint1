@@ -75,36 +75,36 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
         return recommendations;
     }
 
-    private Recommendation formRecommendation(RecommendationRule rule) {
+    public Recommendation formRecommendation(RecommendationRule rule) {
         return new Recommendation(rule.getProductName(), rule.getProductId(), rule.getProductDescription());
     }
 
     // Проверка на то, что пользователь использует продукт типа DEBIT
-    private boolean isUserHaveDebitProduct(UUID userId) {
+    public boolean isUserHaveDebitProduct(UUID userId) {
         Integer countDebitProducts = productRepository.findAmountOfDebitProductsOfUser(userId);
         return countDebitProducts > 0;
     }
 
     // Проверка на то, что пользователь использует продукт типа INVEST
-    private boolean isUserHaveInvestProduct(UUID userId) {
+    public boolean isUserHaveInvestProduct(UUID userId) {
         Integer countInvestProducts = productRepository.findAmountOfInvestProductsOfUser(userId);
         return countInvestProducts > 0;
     }
 
     // Проверка на то, что пользователь пополнял любой из своих продуктов с префиксом SAVING на суммы до 1000 ₽ за одну операцию в любом месяце.
-    private boolean isUserDepositInSavingProductPerOperationMoreThan1000(UUID userId) {
+    public boolean isUserDepositInSavingProductPerOperationMoreThan1000(UUID userId) {
         Integer countDepositInSavingProduct = productRepository.findAmountOfDepositSavingProductsOfUser(userId);
         return countDepositInSavingProduct > 0;
     }
 
     // Проверка на то, что у пользователя есть минимум 5 операций пополнения на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию.
-    private boolean isUserHaveMoreThanFiveOperationsInDebitOrSavingProductMoreThan10000(UUID userId) {
+    public boolean isUserHaveMoreThanFiveOperationsInDebitOrSavingProductMoreThan10000(UUID userId) {
         Integer countResult = productRepository.findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId);
         return countResult >= 5;
     }
 
     //Проверка на то, у пользователя сумма пополнений по всем продуктам типа DEBIT > суммы трат по тем же продуктам
-    private boolean isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(UUID userId) {
+    public boolean isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(UUID userId) {
 
         List<PriceSum> deposit = productRepository.findDebitDepositSumByProduct(userId);
         List<PriceSum> withdrawal = productRepository.findDebitWithdrawalSumByProduct(userId);
@@ -145,33 +145,33 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
     }
 
     // Проверка на то, что пользователь использует продукт типа CREDIT
-    private boolean isUserHaveCreditProduct(UUID userId) {
+    public boolean isUserHaveCreditProduct(UUID userId) {
         Integer countDebitProducts = productRepository.findCreditProductsByUser(userId);
         return countDebitProducts > 0;
     }
 
     // Проверка на то, что сумма трат по всем продуктам типа DEBIT за три месяца > 100 000 ₽.
-    private boolean isWithdrawalSumOnDebitProductsMoreThan100000(UUID userId) {
+    public boolean isWithdrawalSumOnDebitProductsMoreThan100000(UUID userId) {
         Long sum = productRepository.findSumOfDebitWithdrawalProductsByUser(userId);
         return sum > 100000;
     }
 
     // Проверка правил для рекомендации продукта типа INVEST
-    private boolean recommendInvestProduct(UUID userId) {
+    public boolean recommendInvestProduct(UUID userId) {
         return isUserHaveDebitProduct(userId)
                 && !isUserHaveInvestProduct(userId)
                 && isUserDepositInSavingProductPerOperationMoreThan1000(userId);
     }
 
     // Проверка правил для рекомендации продукта типа SAVING
-    private boolean recommendSavingProduct(UUID userId) {
+    public boolean recommendSavingProduct(UUID userId) {
         return isUserHaveDebitProduct(userId)
                 && isUserHaveMoreThanFiveOperationsInDebitOrSavingProductMoreThan10000(userId)
                 && isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(userId);
     }
 
     // Проверка правил для рекомендации продукта типа CREDIT
-    private boolean recommendCreditProduct(UUID userId) {
+    public boolean recommendCreditProduct(UUID userId) {
         return !isUserHaveCreditProduct(userId)
                 && isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(userId)
                 && isWithdrawalSumOnDebitProductsMoreThan100000(userId);
