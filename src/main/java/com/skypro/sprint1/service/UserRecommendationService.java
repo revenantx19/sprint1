@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface UserRecommendationService {
     Optional<UserRecommendation> getRecommendations(UUID userId);
-
+    void clearRecommendationCache();
 }

@@ -9,6 +9,8 @@ import com.skypro.sprint1.repository.ProductRepository;
 import com.skypro.sprint1.repository.RecommendationRuleRepository;
 import com.skypro.sprint1.service.UserRecommendationService;
 import com.skypro.sprint1.util.RecommendationProductUtil;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,18 +21,21 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
     private final ProductRepository productRepository;
     private final RecommendationRuleRepository ruleRepository;
     private final RuleExecutioner ruleExecutioner;
+    private final CacheManager cacheManager;
 
     public UserRecommendationServiceImpl(ProductRepository productRepository,
                                          RecommendationRuleRepository ruleRepository,
-                                         RuleExecutioner ruleExecutioner) {
+                                         RuleExecutioner ruleExecutioner,
+                                         CacheManager cacheManager) {
         this.productRepository = productRepository;
         this.ruleRepository = ruleRepository;
         this.ruleExecutioner = ruleExecutioner;
+        this.cacheManager = cacheManager;
     }
-
 
     // Формирование рекомендаций для пользователя
     @Override
+    @Cacheable("userRecommendation")
     public Optional<UserRecommendation> getRecommendations(UUID userId) {
         List<Recommendation> recommendations = new ArrayList<>();
 
@@ -57,6 +62,11 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
 
         return Optional.of(new UserRecommendation(userId, recommendations));
 
+    }
+
+    @Override
+    public void clearRecommendationCache() {
+        Objects.requireNonNull(cacheManager.getCache("userRecommendation")).clear();
     }
 
     // Рекомендации по введенным правилам

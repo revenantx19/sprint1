@@ -5,7 +5,6 @@ import com.skypro.sprint1.util.RuleValidator;
 import com.skypro.sprint1.repository.RecommendationRuleRepository;
 import com.skypro.sprint1.service.RecommendationRuleService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +41,6 @@ public class RecommendationRuleServiceImpl implements RecommendationRuleService 
     }
 
     @Override
-    @Cacheable(value = "rule", key = "#ruleId")
     public Optional<RecommendationRule> getRule(UUID ruleId) {
         return recommendationRuleRepository.findById(ruleId);
     }
