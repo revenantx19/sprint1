@@ -6,6 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Представляет сущность пользователя.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Setter

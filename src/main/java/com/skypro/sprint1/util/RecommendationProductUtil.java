@@ -5,6 +5,12 @@ import lombok.experimental.UtilityClass;
 
 import java.util.UUID;
 
+/**
+ * Утилита для получения рекомендаций по продуктам.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @UtilityClass
 public class RecommendationProductUtil {
 

@@ -9,10 +9,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Репозиторий для работы с правилами рекомендаций.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Repository
 public interface RecommendationRuleRepository extends JpaRepository<RecommendationRule, UUID> {
 
-    // 1. Пользователь использует продукт
+    /**
+     * 1. Пользователь использует продукт
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT COUNT(*) FROM user_to_product utp " +
@@ -21,10 +29,12 @@ public interface RecommendationRuleRepository extends JpaRepository<Recommendati
     )
     Integer userOf(UUID userId, String productType);
 
-    // 2. Пользователь не использует продукт (см. п. 1, только обратная ситуация)
+    /** 2. Пользователь не использует продукт (обратная ситуация пункта 1) */
 
 
-    // 3. Запрос пополнения. Пользователь пополнял продукт нужного типа на сумму, указанную в запросе.
+    /**
+     * 3. Запрос пополнения. Пользователь пополнял продукт нужного типа на сумму, указанную в запросе.
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT COUNT(*) FROM transactions t " +
@@ -35,8 +45,10 @@ public interface RecommendationRuleRepository extends JpaRepository<Recommendati
     Integer topup(UUID userId, String sum, String productType);
 
 
-    // 4. Сумма пополнения больше суммы трат. Запрос с указанным типом продукта.
-    // Общий метод подсчета суммы как по пополнениям, так и по снятию. Ввел доп. переменную для типа транзакции (Deposit/Withdrawal)
+    /**
+     * 4. Сумма пополнения больше суммы трат. Запрос с указанным типом продукта.
+     * Общий метод подсчета суммы как по пополнениям, так и по снятию. Введена дополнительная переменная для типа транзакции (Deposit/Withdrawal)
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT t.product_id AS productId, SUM(t.amount) AS productSum " +
@@ -48,8 +60,10 @@ public interface RecommendationRuleRepository extends JpaRepository<Recommendati
     List<PriceSum> totalSum(UUID userId, String productType, String transactionType);
 
 
-    // 5. Сумма трат/пополнений по продукту больше некоторой константы N
-    // Ввел доп. переменную для типа транзакции (Deposit/Withdrawal)
+    /**
+     * 5. Сумма трат/пополнений по продукту больше некоторой константы N.
+     * Введена дополнительная переменная для типа транзакции (Deposit/Withdrawal)
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT SUM(t.amount) FROM transactions t " +
@@ -60,7 +74,9 @@ public interface RecommendationRuleRepository extends JpaRepository<Recommendati
     Long totalSumByProduct(UUID userId, String productType, String transactionType);
 
 
-    // 7. Пользователь активно использует продукт определенного типа. Запрос, в котором содержится тип продукта.
+    /**
+     * 7. Пользователь активно использует продукт определенного типа. Запрос, в котором содержится тип продукта.
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT COUNT(*) FROM transactions t " +

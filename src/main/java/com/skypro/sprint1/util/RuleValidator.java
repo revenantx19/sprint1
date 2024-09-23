@@ -4,11 +4,24 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 
-
+/**
+ * Класс для валидации правил.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Slf4j
 @UtilityClass
 public class RuleValidator {
 
+    /**
+     * Проверяет валидность правила.
+     * Правила должны быть разделены символом '%'.
+     * Каждое правило должно быть в формате "имя_правила:аргумент1:аргумент2".
+     *
+     * @param rule Правило для проверки.
+     * @return {@code true}, если правило валидно, иначе {@code false}.
+     */
     public static boolean validate(String rule) {
         String[] rules = rule.split("%");
 
@@ -23,7 +36,7 @@ public class RuleValidator {
         }
 
         for (String r : rules) {
-            String[] ruleArgs= r.split(":");
+            String[] ruleArgs = r.split(":");
 
             try {
                 boolean valid = switch (ruleArgs[0]) {
@@ -46,20 +59,36 @@ public class RuleValidator {
         return true;
     }
 
-
+    /**
+     * Проверяет валидность типа продукта.
+     *
+     * @param productType Тип продукта.
+     * @return {@code true}, если тип продукта валиден, иначе {@code false}.
+     */
     private static boolean validateProductType(String productType) {
         return productType.equals("DEBIT") || productType.equals("CREDIT") || productType.equals("INVEST") || productType.equals("SAVING");
     }
 
+    /**
+     * Проверяет валидность номера и типа продукта.
+     *
+     * @param number      Номер.
+     * @param productType Тип продукта.
+     * @return {@code true}, если номер и тип продукта валидны, иначе {@code false}.
+     */
     private static boolean validateNumberAndProductType(String number, String productType) {
         return NumberUtils.isCreatable(number) && validateProductType(productType);
     }
 
+    /**
+     * Проверяет валидность имени правила.
+     *
+     * @param rule имя правила.
+     * @return {@code false}.
+     */
     private static boolean invalidRuleName(String rule) {
         log.error("Rule doesn't exist: {}", rule);
         return false;
     }
-
-
 
 }

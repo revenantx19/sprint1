@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
+/**
+ * Сервис для работы с правилами рекомендаций.
+ * Предоставляет методы для создания, удаления, получения и получения всех правил рекомендаций.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Service
 @Slf4j
 public class RecommendationRuleServiceImpl implements RecommendationRuleService {

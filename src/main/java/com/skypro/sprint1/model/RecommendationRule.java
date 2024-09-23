@@ -5,6 +5,13 @@ import lombok.*;
 
 import java.util.UUID;
 
+
+/**
+ * Представляет правило рекомендации. У каждой рекомендации свои условия.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Setter

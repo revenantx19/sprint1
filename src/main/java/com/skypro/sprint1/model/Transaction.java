@@ -5,11 +5,18 @@ import lombok.*;
 
 import java.util.UUID;
 
+/**
+ * Представляет сущность операции с транзакциями.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Entity
+@NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @ToString
-@NoArgsConstructor
 @Table(name = "transactions")
 public class Transaction {
 
@@ -28,5 +35,4 @@ public class Transaction {
         this.productId = productId;
         this.amount = amount;
     }
-
 }

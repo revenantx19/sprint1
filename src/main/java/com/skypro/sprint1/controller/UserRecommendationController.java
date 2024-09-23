@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Контроллер для обработки запросов, связанных с рекомендациями для пользователей.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @RestController
 @Slf4j
 @RequestMapping("/recommendation")
@@ -23,6 +29,13 @@ public class UserRecommendationController {
         this.userRecommendationService = userRecommendationService;
     }
 
+    /**
+     * Получение рекомендаций для пользователя по его ID.
+     *
+     * @param userId ID пользователя.
+     * @return Ответ с рекомендациями для пользователя, если они найдены.
+     * Возвращает статус 404(Not Found), если рекомендации не найдены.
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<UserRecommendation> getRecommendations(@PathVariable UUID userId) {
         Optional<UserRecommendation> userRecommendation = userRecommendationService.getRecommendations(userId);

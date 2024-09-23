@@ -6,7 +6,6 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -121,7 +120,7 @@ public class ProductRepositoryTest {
     //Тест проверяет, что метод findDebitDepositSumByProduct правильно находит сумму пополнений по каждому продукту
 
     @Test
-    void findDebitDepositSumByProduct() {
+    void findDebitSumByProduct() {
 
         //Создание случайного UUID для пользователя
         UUID userId = UUID.randomUUID();
@@ -131,7 +130,7 @@ public class ProductRepositoryTest {
         expectedDepositSum.put(UUID.randomUUID(), 15000);
 
         //Запрос на получение суммы депозитов для продукта связанных с пользовательским ID
-        Map<UUID, Integer> depositSum = productRepository.findDebitDepositSumByProduct(userId);
+        var depositSum = productRepository.findDebitSumByProduct(userId);
 
         //Сравнение результатов
         assertEquals(expectedDepositSum, depositSum);
