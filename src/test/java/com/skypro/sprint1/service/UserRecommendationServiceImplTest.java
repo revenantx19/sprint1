@@ -72,12 +72,20 @@ public class UserRecommendationServiceImplTest {
         when(RecommendationProductUtil.getInvestProduct()).thenReturn(new Recommendation());
         when(RecommendationProductUtil.getSavingProduct()).thenReturn(new Recommendation());
         when(RecommendationProductUtil.getCreditProduct()).thenReturn(new Recommendation());
-        when(userRecommendationService.getRecommendations(userId)).thenReturn(List.of(new Recommendation));
+
+        List<Recommendation> expectedRecommendations = List.of(
+                new Recommendation(),
+                new Recommendation(),
+                new Recommendation(),
+                new Recommendation()
+        );
+        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.of(new UserRecommendation(userId, expectedRecommendations)));
 
         Optional<UserRecommendation> result = userRecommendationService.getRecommendations(userId);
 
         assertTrue(result.isPresent());
         assertEquals(userId, result.get().getUserId());
+        assertEquals(expectedRecommendations, result.get().getRecommendations());
         assertEquals(4, result.get().getRecommendations().size());
     }
 

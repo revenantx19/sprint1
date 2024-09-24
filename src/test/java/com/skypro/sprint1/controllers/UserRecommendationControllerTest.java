@@ -1,47 +1,60 @@
 package com.skypro.sprint1.controllers;
 
+import com.skypro.sprint1.pojo.Recommendation;
+import com.skypro.sprint1.pojo.UserRecommendation;
+import com.skypro.sprint1.service.impl.UserRecommendationServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-/*
-@ExtendWith(MockitoExtension.class)
-public class UserRecommendationControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class UserRecommendationControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Mock
-    private UserRecommendationService userRecommendationService;
+    private TestRestTemplate restTemplate;
 
     @InjectMocks
-    private UserRecommendationController userRecommendationController;
+    private UserRecommendationServiceImpl userRecommendationService;
+
+    private UUID userId;
 
     @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userRecommendationController).build();
+    public void setup() {
+        userId = UUID.randomUUID();
     }
 
+    // Проверяем, что ответ имеет статус 200 и тело ответа содержит созданный объект userRecommendation
     @Test
-    public void testGetRecommendations() throws Exception {
-        UUID userId = UUID.randomUUID();
-        List<UserRecommendation> recommendations = Arrays.asList(
-                //new UserRecommendation(userId, "Recommendation 1"),
-                //new UserRecommendation(userId, "Recommendation 2")
-        );
+    void getRecommendations_shouldReturnOkWithRecommendations() {
+        UserRecommendation userRecommendation = new UserRecommendation(userId, List.of(new Recommendation(), new Recommendation()));
 
-        when(userRecommendationService.getRecommendations(userId)).thenReturn(recommendations);
+        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.of(userRecommendation));
 
-        mockMvc.perform(get("/recommendation/{user_id}", userId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].userId").value(userId.toString()))
-                .andExpect(jsonPath("$[0].recommendation").value("Recommendation 1"))
-                .andExpect(jsonPath("$[1].userId").value(userId.toString()))
-                .andExpect(jsonPath("$[1].recommendation").value("Recommendation 2"));
+        ResponseEntity<UserRecommendation> response = restTemplate.getForEntity("/recommendation/" + userId, UserRecommendation.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(userRecommendation);
+    }
 
-        verify(userRecommendationService, times(1)).getRecommendations(userId);
+    // Проверяем, что ответ имеет статус 404 и тело ответа содержит null
+    @Test
+    void getRecommendations_shouldReturnNotFoundWhenRecommendationsNotFound() {
+        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.empty());
+
+        ResponseEntity<UserRecommendation> response = restTemplate.getForEntity("/recommendation/" + userId, UserRecommendation.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNull();
     }
 }
 
- */
