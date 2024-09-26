@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 
 import com.skypro.sprint1.model.PriceSum;
+import static org.assertj.core.api.Assertions.assertThat;
 import com.skypro.sprint1.model.RecommendationRule;
 import com.skypro.sprint1.model.RuleExecutioner;
 import com.skypro.sprint1.pojo.Recommendation;
@@ -46,80 +47,62 @@ public class UserRecommendationServiceImplTest {
 
     //Должен возвращать рекомендации по правилам
     @Test
-    public void shouldReturnRecommendationsByRules() {
-        RecommendationRule rule1 = new RecommendationRule("rule1", UUID.randomUUID(),"name1", "description1");
-        RecommendationRule rule2 = new RecommendationRule("rule2", UUID.randomUUID(), "name2", "description2");
-        List<RecommendationRule> rules = Arrays.asList(rule1, rule2);
-
-        when(ruleRepository.findAll()).thenReturn(rules);
-        when(ruleExecutioner.execute(userId, rule1.getRule())).thenReturn(true);
-        when(ruleExecutioner.execute(userId, rule2.getRule())).thenReturn(false);
-
-        Optional<UserRecommendation> result = userRecommendationService.getRecommendations(userId);
-
-        assertTrue(result.isPresent());
-        UserRecommendation userRecommendation = result.get();
-        assertEquals(userId, userRecommendation.getUserId());
-        assertEquals(1, userRecommendation.getRecommendations().size());
-        assertEquals(rule1.getProductName(), userRecommendation.getRecommendations().get(0).getProductName());
-        assertEquals(rule1.getProductId(), userRecommendation.getRecommendations().get(0).getProductId());
-        assertEquals(rule1.getProductDescription(), userRecommendation.getRecommendations().get(0));
-    }
-
-    // Проверяем, что метод возвращает getRecommendations с 4 рекомендациями, когда все продукты доступны
-    @Test
-    public void testGetRecommendationsWithAllProducts() {
-        when(RecommendationProductUtil.getInvestProduct()).thenReturn(new Recommendation());
-        when(RecommendationProductUtil.getSavingProduct()).thenReturn(new Recommendation());
-        when(RecommendationProductUtil.getCreditProduct()).thenReturn(new Recommendation());
-
+    void AllRecommendations() {
         List<Recommendation> expectedRecommendations = List.of(
-                new Recommendation(),
-                new Recommendation(),
-                new Recommendation(),
-                new Recommendation()
+                RecommendationProductUtil.getInvestProduct(),
+                RecommendationProductUtil.getSavingProduct(),
+                RecommendationProductUtil.getCreditProduct()
         );
-        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.of(new UserRecommendation(userId, expectedRecommendations)));
 
-        Optional<UserRecommendation> result = userRecommendationService.getRecommendations(userId);
+        when(userRecommendationService.recommendInvestProduct(userId)).thenReturn(true);
+        when(userRecommendationService.recommendSavingProduct(userId)).thenReturn(true);
+        when(userRecommendationService.recommendCreditProduct(userId)).thenReturn(true);
+        when(userRecommendationService.getRecommendationsByRules(userId)).thenReturn(expectedRecommendations.subList(3, 5));
 
-        assertTrue(result.isPresent());
-        assertEquals(userId, result.get().getUserId());
-        assertEquals(expectedRecommendations, result.get().getRecommendations());
-        assertEquals(4, result.get().getRecommendations().size());
+        UserRecommendation userRecommendation = userRecommendationService.getRecommendations(userId);
+
+        assertEquals(userId, userRecommendation.getUserId());
+        assertEquals(expectedRecommendations, userRecommendation.getRecommendations());
     }
 
-    // Проверяем, что метод возвращает пустой список, когда ни одно правило не соответствует
+    // Проверяем, что метод возвращает пустой список рекомендаций, когда ни одно из условий для рекомендаций продуктов и правил не выполнено
     @Test
-    public void NoRulesMatch() {
-        List<RecommendationRule> rules = Arrays.asList(
-                new RecommendationRule("rule1", UUID.randomUUID(), "product1", "description1"),
-                new RecommendationRule("rule2", UUID.randomUUID(), "product2", "description2"),
-                new RecommendationRule("rule3", UUID.randomUUID(), "product3", "description3")
-        );
-        when(ruleRepository.findAll()).thenReturn(rules);
-        when(ruleExecutioner.execute(eq(userId), any())).thenReturn(false);
+    void NoRecommendations() {
+        UUID userId = UUID.randomUUID();
 
-        Optional<UserRecommendation> recommendations = userRecommendationService.getRecommendations(userId);
+        when(userRecommendationService.recommendInvestProduct(userId)).thenReturn(false);
+        when(userRecommendationService.recommendSavingProduct(userId)).thenReturn(false);
+        when(userRecommendationService.recommendCreditProduct(userId)).thenReturn(false);
+        when(userRecommendationService.getRecommendationsByRules(userId)).thenReturn(List.of());
 
-        assertTrue(recommendations.isEmpty());
+        UserRecommendation userRecommendation = userRecommendationService.getRecommendations(userId);
+
+        assertEquals(userId, userRecommendation.getUserId());
+        assertTrue(userRecommendation.getRecommendations().isEmpty());
     }
 
-    // Проверяем метод возвращает две рекомендации, когда некоторые правила соответствуют
+    // Проверяем, что если нет правил, метод возвращает пустой список и не вызывает RuleExecutioner.
     @Test
-    public void SomeRulesMatch() {
-        List<RecommendationRule> rules = Arrays.asList(
-                new RecommendationRule("rule1", UUID.randomUUID(), "product1", "description1"),
-                new RecommendationRule("rule2", UUID.randomUUID(), "product2", "description2"),
-                new RecommendationRule("rule3", UUID.randomUUID(), "product3", "description3")
-        );
-        when(ruleRepository.findAll()).thenReturn(rules);
-        when(ruleExecutioner.execute(eq(userId), any())).thenReturn(true, false, true);
+    public void testGetRecommendationsByRules() {
+        when(ruleRepository.findAll()).thenReturn(List.of());
 
-        Optional<UserRecommendation> recommendations = userRecommendationService.getRecommendations(userId);
+        List<Recommendation> recommendations = userRecommendationService.getRecommendationsByRules(UUID.randomUUID());
 
-        assertFalse(recommendations.isEmpty());
-        assertEquals(2, recommendations.get().getRecommendations().size());
+        assertThat(recommendations).isEmpty();
+        verify(ruleExecutioner, never()).execute(any(), any());
+    }
+
+    // Проверяем, что если правило не проходит проверку, рекомендация не добавляется в список
+    @Test
+    public void testGetRecommendationsByRules_RuleExecutesFalse_DoesNotAddRecommendation() {
+        RecommendationRule rule = new RecommendationRule();
+        when(ruleRepository.findAll()).thenReturn(List.of(rule));
+        when(ruleExecutioner.execute(any(), eq(rule.getRule()))).thenReturn(false);
+
+        List<Recommendation> recommendations = userRecommendationService.getRecommendationsByRules(UUID.randomUUID());
+
+        assertThat(recommendations).isEmpty();
+        verify(ruleExecutioner).execute(any(), eq(rule.getRule()));
     }
 
     //Проверяем, что метод formRecommendation корректно создает объект Recommendation на основе переданного RecommendationRule

@@ -1,11 +1,14 @@
 package com.skypro.sprint1.controllers;
 
-import com.skypro.sprint1.pojo.Recommendation;
+import com.skypro.sprint1.controller.UserRecommendationController;
 import com.skypro.sprint1.pojo.UserRecommendation;
+import com.skypro.sprint1.service.UserRecommendationService;
 import com.skypro.sprint1.service.impl.UserRecommendationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -17,6 +20,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,36 +30,45 @@ class UserRecommendationControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @InjectMocks
-    private UserRecommendationServiceImpl userRecommendationService;
-
     private UUID userId;
 
+    @Mock
+    private UserRecommendationService userRecommendationService;
+
+    private UserRecommendationController controller;
+
     @BeforeEach
-    public void setup() {
-        userId = UUID.randomUUID();
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        controller = new UserRecommendationController(userRecommendationService);
     }
 
     // Проверяем, что ответ имеет статус 200 и тело ответа содержит созданный объект userRecommendation
     @Test
-    void getRecommendations_shouldReturnOkWithRecommendations() {
-        UserRecommendation userRecommendation = new UserRecommendation(userId, List.of(new Recommendation(), new Recommendation()));
+    void testGetRecommendations_UserFound() {
+        UUID userId = UUID.randomUUID();
+        UserRecommendation expectedUserRecommendation = new UserRecommendation(userId, List.of());
 
-        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.of(userRecommendation));
+        when(userRecommendationService.getRecommendations(userId)).thenReturn(expectedUserRecommendation);
 
-        ResponseEntity<UserRecommendation> response = restTemplate.getForEntity("/recommendation/" + userId, UserRecommendation.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(userRecommendation);
+        ResponseEntity<UserRecommendation> response = controller.getRecommendations(userId);
+
+        assertEquals(ResponseEntity.ok(), response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(expectedUserRecommendation, response.getBody());
     }
 
     // Проверяем, что ответ имеет статус 404 и тело ответа содержит null
     @Test
-    void getRecommendations_shouldReturnNotFoundWhenRecommendationsNotFound() {
-        when(userRecommendationService.getRecommendations(userId)).thenReturn(Optional.empty());
+    void testGetRecommendations_UserNotFound() {
+        UUID userId = UUID.randomUUID();
 
-        ResponseEntity<UserRecommendation> response = restTemplate.getForEntity("/recommendation/" + userId, UserRecommendation.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNull();
+        when(userRecommendationService.getRecommendations(userId)).thenReturn(new UserRecommendation(userId, List.of()));
+
+        ResponseEntity<UserRecommendation> response = controller.getRecommendations(userId);
+
+        assertEquals(ResponseEntity.notFound(), response.getStatusCode());
+        assertEquals(null, response.getBody());
     }
 }
 

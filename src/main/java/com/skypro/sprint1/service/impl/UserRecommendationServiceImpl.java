@@ -66,7 +66,7 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
     }
 
     // Рекомендации по введенным правилам
-    private List<Recommendation> getRecommendationsByRules(UUID userId) {
+    public List<Recommendation> getRecommendationsByRules(UUID userId) {
         List<RecommendationRule> rules = ruleRepository.findAll();
 
         List<Recommendation> recommendations = new ArrayList<>();
