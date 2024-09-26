@@ -9,7 +9,6 @@ import com.skypro.sprint1.service.UserRecommendationService;
 import com.skypro.sprint1.util.TelegramBotExecutionMessage;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class RecommendCommand extends ArgumentCommand {
@@ -38,10 +37,10 @@ public class RecommendCommand extends ArgumentCommand {
             userNotFoundMessage(bot, chatId, userName);
 
         } else {
-            Optional<UserRecommendation> recommendation = userRecommendationService.getRecommendations(userId);
+            UserRecommendation recommendation = userRecommendationService.getRecommendations(userId);
 
-            if (recommendation.isPresent()) {
-                recommendationFoundMessage(bot, chatId, recommendation.get(), userName);
+            if (recommendation.getRecommendations().isEmpty()) {
+                recommendationFoundMessage(bot, chatId, recommendation, userName);
             } else {
                 recommendationNotFoundMessage(bot, chatId);
             }

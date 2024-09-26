@@ -36,7 +36,7 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
     // Формирование рекомендаций для пользователя
     @Override
     @Cacheable("userRecommendation")
-    public Optional<UserRecommendation> getRecommendations(UUID userId) {
+    public UserRecommendation getRecommendations(UUID userId) {
         List<Recommendation> recommendations = new ArrayList<>();
 
         if (recommendInvestProduct(userId)) {
@@ -56,11 +56,7 @@ public class UserRecommendationServiceImpl implements UserRecommendationService 
 
         recommendations.addAll(getRecommendationsByRules(userId));
 
-        if (recommendations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(new UserRecommendation(userId, recommendations));
+        return new UserRecommendation(userId, recommendations);
 
     }
 
