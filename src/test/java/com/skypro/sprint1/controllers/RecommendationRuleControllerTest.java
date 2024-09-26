@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ class RecommendationRuleControllerTest {
 
         ResponseEntity<RecommendationRule> response = controller.createRule(rule1);
 
-        assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.ok());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(rule1);
         verify(recommendationRuleService).createRule(rule1);
     }
@@ -57,12 +58,12 @@ class RecommendationRuleControllerTest {
 
         ResponseEntity<RecommendationRule> response = controller.createRule(rule1);
 
-        assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.notFound());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
         verify(recommendationRuleService).createRule(rule1);
     }
 
-    // Проверяем, что метод deleteRule вызывает серивис удаления
+    // Проверяем, что метод deleteRule вызывает сервис удаления
     @Test
     void deleteRuleTest() {
         controller.deleteRule(ruleId1);
@@ -71,13 +72,12 @@ class RecommendationRuleControllerTest {
     }
 
     // Проверяем, что метод getRule возвращает ответ 200
-    @Test
-    void shouldReturnOkWithFoundRule() {
+    @Test void shouldReturnOkWithFoundRule() {
         when(recommendationRuleService.getRule(ruleId1)).thenReturn(Optional.of(rule1));
 
         ResponseEntity<RecommendationRule> response = controller.getRule(ruleId1);
 
-        assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.ok());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(rule1);
         verify(recommendationRuleService).getRule(ruleId1);
     }
@@ -89,7 +89,7 @@ class RecommendationRuleControllerTest {
 
         ResponseEntity<RecommendationRule> response = controller.getRule(ruleId1);
 
-        assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.notFound());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
         verify(recommendationRuleService).getRule(ruleId1);
     }

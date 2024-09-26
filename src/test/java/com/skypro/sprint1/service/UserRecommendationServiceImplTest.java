@@ -118,7 +118,7 @@ public class UserRecommendationServiceImplTest {
         assertEquals("description1", recommendation.getProductDescription());
     }
 
-    // Проверяем, что метод  isUserHaveDebitProduct возвращает true
+    // Проверяем, что метод isUserHaveDebitProduct возвращает true
     @Test
     public void UserHasDebitProduct() {
         when(productRepository.findAmountOfDebitProductsOfUser(userId)).thenReturn(1);
@@ -129,7 +129,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDebitProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserHaveDebitProduct возвращает false
+    // Проверяем, что метод isUserHaveDebitProduct возвращает false
     @Test
     public void UserDoesNotHaveDebitProduct() {
         when(productRepository.findAmountOfDebitProductsOfUser(userId)).thenReturn(0);
@@ -140,7 +140,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDebitProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserHaveInvestProduct возвращает true
+    // Проверяем, что метод isUserHaveInvestProduct возвращает true
     @Test
     public void UserHasInvestProduct() {
         when(productRepository.findAmountOfInvestProductsOfUser(userId)).thenReturn(1);
@@ -151,7 +151,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserHaveInvestProduct возвращает false
+    // Проверяем, что метод isUserHaveInvestProduct возвращает false
     @Test
     public void UserDoesNotHaveInvestProduct() {
         when(productRepository.findAmountOfInvestProductsOfUser(userId)).thenReturn(0);
@@ -162,7 +162,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true
+    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true
     @Test
     public void UserHasSavingProduct() {
         when(productRepository.findAmountOfDepositSavingProductsOfUser(userId)).thenReturn(1);
@@ -173,7 +173,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDepositSavingProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false
+    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false
     @Test
     public void UserDoesNotHaveSavingProduct() {
         when(productRepository.findAmountOfDepositSavingProductsOfUser(userId)).thenReturn(0);
@@ -184,7 +184,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDepositSavingProductsOfUser(userId);
     }
 
-    // Проверяем, что метод  isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true, когда пользователь имеет минимум 5 операций пополнения
+    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true, когда пользователь имеет минимум 5 операций пополнения
     // на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию
     @Test
     public void UserHasMoreThanFive() {
@@ -196,7 +196,7 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId);
     }
 
-    // Проверяем, что метод  isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false, когда пользователь не имеет минимум 5 операций пополнения
+    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false, когда пользователь не имеет минимум 5 операций пополнения
     // на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию
     @Test
     public void UserDoesNotHaveMoreThanFive() {

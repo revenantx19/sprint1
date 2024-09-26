@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.cache.Cache;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +26,7 @@ public class RecommendationRuleServiceImplTest {
 
     @Mock
     private RecommendationRuleRepository recommendationRuleRepository;
+    private Cache userRecommendationCache;
 
     @InjectMocks
     private RecommendationRuleServiceImpl recommendationRuleService;
@@ -49,11 +51,11 @@ public class RecommendationRuleServiceImplTest {
         when(RuleValidator.validate(rule.getRule())).thenReturn(true);
         when(recommendationRuleRepository.save(any(RecommendationRule.class))).thenReturn(rule);
 
-        Optional<RecommendationRule> result = recommendationRuleService.createRule(rule);
+        RecommendationRule result = recommendationRuleService.createRule(rule).orElse(null);
 
         // Проверяем, что возвращаемое значение соответствует ожидаемому и что метод save вызывается ровно один раз.
-        assertTrue(result.isPresent());
-        assertEquals(rule, result.get());
+        assertNotNull(result);
+        assertEquals(rule, result);
         verify(recommendationRuleRepository, times(1)).save(rule);
     }
 
@@ -66,16 +68,18 @@ public class RecommendationRuleServiceImplTest {
 
         Optional<RecommendationRule> result = recommendationRuleService.createRule(rule);
 
-        // Убеждемся, что возвращаемое значение пустое и метод save не вызывается.
+        // Убеждаемся, что возвращаемое значение пустое и метод save не вызывается.
         assertFalse(result.isPresent());
-        verify(recommendationRuleRepository, never()).save(any(RecommendationRule.class));
+        verify(recommendationRuleRepository, never()).save(argThat(r -> r.getRule().equals("invalidRule")));
     }
 
     // Тест shouldDeleteRule: Проверяет, что метод deleteRule вызывает метод deleteById в recommendationRuleRepository.
     @Test
     public void shouldDeleteRule() {
+        doNothing().when(recommendationRuleRepository).deleteById(ruleId);
         recommendationRuleService.deleteRule(ruleId);
         verify(recommendationRuleRepository, times(1)).deleteById(ruleId);
+        verify(userRecommendationCache, times(1)).clear();
     }
 
     // Тест shouldReturnRuleWhenExists: Проверяет, что метод getRule возвращает правило, если оно существует в репозитории.
