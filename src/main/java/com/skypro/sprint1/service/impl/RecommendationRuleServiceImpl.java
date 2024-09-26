@@ -5,9 +5,11 @@ import com.skypro.sprint1.util.RuleValidator;
 import com.skypro.sprint1.repository.RecommendationRuleRepository;
 import com.skypro.sprint1.service.RecommendationRuleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,9 +18,11 @@ import java.util.UUID;
 public class RecommendationRuleServiceImpl implements RecommendationRuleService {
 
     private final RecommendationRuleRepository recommendationRuleRepository;
+    private final CacheManager cacheManager;
 
-    public RecommendationRuleServiceImpl(RecommendationRuleRepository recommendationRuleRepository) {
+    public RecommendationRuleServiceImpl(RecommendationRuleRepository recommendationRuleRepository, CacheManager cacheManager) {
         this.recommendationRuleRepository = recommendationRuleRepository;
+        this.cacheManager = cacheManager;
     }
 
     @Override
@@ -32,11 +36,13 @@ public class RecommendationRuleServiceImpl implements RecommendationRuleService 
         }
 
         log.info("Saving rule {}", rule.getRule());
+        Objects.requireNonNull(cacheManager.getCache("userRecommendation")).clear();
         return Optional.of(recommendationRuleRepository.save(rule));
     }
 
     @Override
     public void deleteRule(UUID ruleId) {
+        Objects.requireNonNull(cacheManager.getCache("userRecommendation")).clear();
         recommendationRuleRepository.deleteById(ruleId);
     }
 
