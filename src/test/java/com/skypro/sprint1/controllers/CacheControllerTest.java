@@ -1,11 +1,12 @@
 package com.skypro.sprint1.controllers;
 
-import com.skypro.sprint1.controller.CacheController;
+import com.skypro.sprint1.controller.ManagementController;
 import com.skypro.sprint1.service.UserRecommendationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,17 +18,20 @@ class CacheControllerTest {
     @Mock
     private UserRecommendationService userRecommendationService;
 
-    private CacheController cacheController;
+    @Mock
+    private BuildProperties buildProperties;
+
+    private ManagementController managementController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        cacheController = new CacheController(userRecommendationService);
+        managementController = new ManagementController(userRecommendationService, buildProperties);
     }
 
     @Test
     void clearRecommendationCache_shouldClearCacheAndReturnOk() {
-        ResponseEntity<String> response = cacheController.clearRecommendationCache();
+        ResponseEntity<String> response = managementController.clearRecommendationCache();
 
         verify(userRecommendationService).clearRecommendationCache();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
