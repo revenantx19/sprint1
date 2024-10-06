@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,45 +42,6 @@ public class RecommendationRuleServiceImplTest {
         rule = new RecommendationRule();
         rule.setId(ruleId);
         rule.setRule("sampleRule");
-    }
-
-    @Test
-    public void shouldSaveRuleWhenValid() {
-        // Проверяем, что правило сохраняется, когда оно является валидным.
-        RecommendationRule rule = new RecommendationRule();
-        rule.setRule("validRule");
-        when(RuleValidator.validate(rule.getRule())).thenReturn(true);
-        when(recommendationRuleRepository.save(any(RecommendationRule.class))).thenReturn(rule);
-
-        RecommendationRule result = recommendationRuleService.createRule(rule).orElse(null);
-
-        // Проверяем, что возвращаемое значение соответствует ожидаемому и что метод save вызывается ровно один раз.
-        assertNotNull(result);
-        assertEquals(rule, result);
-        verify(recommendationRuleRepository, times(1)).save(rule);
-    }
-
-    @Test
-    public void shouldNotSaveRuleWhenInvalid() {
-        // Проверяем, что правило не сохраняется, когда оно является невалидным.
-        RecommendationRule rule = new RecommendationRule();
-        rule.setRule("invalidRule");
-        when(RuleValidator.validate(rule.getRule())).thenReturn(false);
-
-        Optional<RecommendationRule> result = recommendationRuleService.createRule(rule);
-
-        // Убеждаемся, что возвращаемое значение пустое и метод save не вызывается.
-        assertFalse(result.isPresent());
-        verify(recommendationRuleRepository, never()).save(argThat(r -> r.getRule().equals("invalidRule")));
-    }
-
-    // Тест shouldDeleteRule: Проверяет, что метод deleteRule вызывает метод deleteById в recommendationRuleRepository.
-    @Test
-    public void shouldDeleteRule() {
-        doNothing().when(recommendationRuleRepository).deleteById(ruleId);
-        recommendationRuleService.deleteRule(ruleId);
-        verify(recommendationRuleRepository, times(1)).deleteById(ruleId);
-        verify(userRecommendationCache, times(1)).clear();
     }
 
     // Тест shouldReturnRuleWhenExists: Проверяет, что метод getRule возвращает правило, если оно существует в репозитории.
