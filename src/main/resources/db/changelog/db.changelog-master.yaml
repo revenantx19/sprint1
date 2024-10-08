@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/users.sql
+  - include:
+      file: db/changelog/changeset/import-data-to-users.yaml
+  - include:
+      file: db/changelog/changeset/products.sql
+  - include:
+      file: db/changelog/changeset/import-data-to-products.yaml
+  - include:
+      file: db/changelog/changeset/transactions.sql
+  - include:
+      file: db/changelog/changeset/import-data-to-transactions.yaml
+  - include:
+      file: db/changelog/changeset/user_to_product.sql
+  - include:
+      file: db/changelog/changeset/import-data-to-user_to_product.yaml

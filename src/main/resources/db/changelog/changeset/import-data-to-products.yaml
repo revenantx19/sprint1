@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/changeset/import-data-to-products.yaml
+  - changeSet:
+      id: 002_import_csv_to_products
+      author: nikita_malinkin
+      changes:
+        - loadData:
+            columns:
+              - column:
+                  index: 1
+                  name: id
+              - column:
+                  index: 2
+                  name: type
+              - column:
+                  index: 3
+                  name: name
+            tableName: products
+            encoding: UTF-8
+            separator: ','
+            quotchar: '"'
+            file: "db/changelog/csv/products.csv"
