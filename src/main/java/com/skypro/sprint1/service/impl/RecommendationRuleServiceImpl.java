@@ -13,6 +13,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Сервис для работы с правилами рекомендаций.
+ * Предоставляет методы для создания, удаления, получения и получения всех правил рекомендаций.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Service
 @Slf4j
 public class RecommendationRuleServiceImpl implements RecommendationRuleService {
@@ -25,6 +32,12 @@ public class RecommendationRuleServiceImpl implements RecommendationRuleService 
         this.cacheManager = cacheManager;
     }
 
+    /**
+     * Создание новое правило рекомендации.
+     *
+     * @param rule новое правило.
+     * @return созданное правило.
+     */
     @Override
     public Optional<RecommendationRule> createRule(RecommendationRule rule) {
 
@@ -40,17 +53,32 @@ public class RecommendationRuleServiceImpl implements RecommendationRuleService 
         return Optional.of(recommendationRuleRepository.save(rule));
     }
 
+    /**
+     * Удаляет рекомендательное правило по его идентификатору.
+     *
+     * @param ruleId идентификатор правила.
+     */
     @Override
     public void deleteRule(UUID ruleId) {
         Objects.requireNonNull(cacheManager.getCache("userRecommendation")).clear();
         recommendationRuleRepository.deleteById(ruleId);
     }
 
+    /**
+     * Получение рекомендательного правила по его идентификатору.
+     *
+     * @param ruleId идентификатор правила.
+     * @return найденное правило.
+     */
     @Override
     public Optional<RecommendationRule> getRule(UUID ruleId) {
         return recommendationRuleRepository.findById(ruleId);
     }
 
+    /**
+     * Получение всех правил рекомендаций.
+     * @return список правил рекомендаций.
+     */
     @Override
     public List<RecommendationRule> getRules() {
         return recommendationRuleRepository.findAll();

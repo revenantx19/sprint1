@@ -1,11 +1,14 @@
 package com.skypro.sprint1.service;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 
 import com.skypro.sprint1.model.PriceSum;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import com.skypro.sprint1.model.RecommendationRule;
 import com.skypro.sprint1.model.RuleExecutioner;
 import com.skypro.sprint1.pojo.Recommendation;
@@ -21,6 +24,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Тестовый класс для {@link UserRecommendationServiceImpl}.
+ *
+ * @author Vladimir Kuznetsov
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 public class UserRecommendationServiceImplTest {
 
@@ -38,12 +47,17 @@ public class UserRecommendationServiceImplTest {
 
     private UUID userId;
 
+    /**
+     * Метод, который запускается перед каждым тестом.
+     */
     @BeforeEach
     public void setup() {
         userId = UUID.randomUUID();
     }
 
-    // Проверяем, что если нет правил, метод возвращает пустой список и не вызывает RuleExecutioner.
+    /**
+     * Тест, проверяющий, что если нет правил, метод возвращает пустой список и не вызывает {@link RuleExecutioner}.
+     */
     @Test
     public void testGetRecommendationsByRules() {
         when(ruleRepository.findAll()).thenReturn(List.of());
@@ -54,7 +68,9 @@ public class UserRecommendationServiceImplTest {
         verify(ruleExecutioner, never()).execute(any(), any());
     }
 
-    // Проверяем, что если правило не проходит проверку, рекомендация не добавляется в список
+    /**
+     * Тест, проверяющий, что если правило не проходит проверку, рекомендация не добавляется в список.
+     */
     @Test
     public void testGetRecommendationsByRules_RuleExecutesFalse_DoesNotAddRecommendation() {
         RecommendationRule rule = new RecommendationRule();
@@ -67,7 +83,10 @@ public class UserRecommendationServiceImplTest {
         verify(ruleExecutioner).execute(any(), eq(rule.getRule()));
     }
 
-    //Проверяем, что метод formRecommendation корректно создает объект Recommendation на основе переданного RecommendationRule
+    /**
+     * Тест, проверяющий, что метод {@link UserRecommendationServiceImpl#formRecommendation(RecommendationRule)}
+     * корректно создает объект {@link Recommendation} на основе переданного {@link RecommendationRule}.
+     */
     @Test
     public void testFormRecommendation() {
         RecommendationRule rule = new RecommendationRule("rule1", UUID.randomUUID(), "product1", "description1");
@@ -80,7 +99,9 @@ public class UserRecommendationServiceImplTest {
         assertEquals("description1", recommendation.getProductDescription());
     }
 
-    // Проверяем, что метод isUserHaveDebitProduct возвращает true
+    /**
+     * Тест, проверяющий, что метод {@link UserRecommendationServiceImpl#isUserHaveDebitProduct(UUID)} возвращает true.
+     */
     @Test
     public void UserHasDebitProduct() {
         when(productRepository.findAmountOfDebitProductsOfUser(userId)).thenReturn(1);
@@ -91,7 +112,9 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDebitProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserHaveDebitProduct возвращает false
+    /**
+     * Тест, проверяющий, что метод {@link UserRecommendationServiceImpl#isUserHaveDebitProduct(UUID)} возвращает false.
+     */
     @Test
     public void UserDoesNotHaveDebitProduct() {
         when(productRepository.findAmountOfDebitProductsOfUser(userId)).thenReturn(0);
@@ -102,7 +125,10 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDebitProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserHaveInvestProduct возвращает true
+    /**
+     * Проверяет, что метод {@link UserRecommendationServiceImpl#isUserHaveInvestProduct(UUID)} возвращает {@code true},
+     * когда пользователь имеет инвестиционные продукты.
+     */
     @Test
     public void UserHasInvestProduct() {
         when(productRepository.findAmountOfInvestProductsOfUser(userId)).thenReturn(1);
@@ -113,7 +139,10 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserHaveInvestProduct возвращает false
+    /**
+     * Проверяет, что метод {@link UserRecommendationServiceImpl#isUserHaveInvestProduct(UUID)} возвращает {@code false},
+     * когда пользователь не имеет инвестиционных продуктов.
+     */
     @Test
     public void UserDoesNotHaveInvestProduct() {
         when(productRepository.findAmountOfInvestProductsOfUser(userId)).thenReturn(0);
@@ -124,7 +153,10 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true
+    /**
+     * Проверяет, что метод {@link UserRecommendationServiceImpl#isUserDepositInSavingProductPerOperationMoreThan1000(UUID)}
+     * возвращает {@code true}, когда пользователь имеет сберегательные продукты.
+     */
     @Test
     public void UserHasSavingProduct() {
         when(productRepository.findAmountOfDepositSavingProductsOfUser(userId)).thenReturn(1);
@@ -135,7 +167,10 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDepositSavingProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false
+    /**
+     * Проверяет, что метод {@link UserRecommendationServiceImpl#isUserDepositInSavingProductPerOperationMoreThan1000(UUID)}
+     * возвращает {@code false}, когда пользователь не имеет сберегательных продуктов.
+     */
     @Test
     public void UserDoesNotHaveSavingProduct() {
         when(productRepository.findAmountOfDepositSavingProductsOfUser(userId)).thenReturn(0);
@@ -146,8 +181,11 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfDepositSavingProductsOfUser(userId);
     }
 
-    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает true, когда пользователь имеет минимум 5 операций пополнения
-    // на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию
+    /**
+     * Проверяет, что метод {@link UserRecommendationServiceImpl#isUserHaveMoreThanFiveOperationsInDebitOrSavingProductMoreThan10000(UUID)}
+     * возвращает {@code true}, когда пользователь имеет не менее 5 операций пополнения
+     * на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию.
+     */
     @Test
     public void UserHasMoreThanFive() {
         when(productRepository.findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId)).thenReturn(5);
@@ -158,8 +196,11 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId);
     }
 
-    // Проверяем, что метод isUserDepositInSavingProductPerOperationMoreThan1000 возвращает false, когда пользователь не имеет минимум 5 операций пополнения
-    // на любой продукт типа DEBIT или SAVING больше чем на 10 000 ₽ за одну операцию
+    /**
+     * Тест, который проверяет, что метод {@link UserRecommendationServiceImpl#isUserHaveMoreThanFiveOperationsInDebitOrSavingProductMoreThan10000(UUID)}
+     * возвращает {@code false}, когда пользователь не имеет минимум 5 операций пополнения на любой продукт типа DEBIT или SAVING
+     * больше чем на 10 000 ₽ за одну операцию.
+     */
     @Test
     public void UserDoesNotHaveMoreThanFive() {
         when(productRepository.findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId)).thenReturn(4);
@@ -170,7 +211,10 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findAmountOfInvestedDebitOrSavingProductsMoreThan10000(userId);
     }
 
-    // Проверяем, что метод возвращает false, когда сумма пополнений по всем продуктам типа DEBIT не превышает сумму трат по тем же продуктам
+    /**
+     * Тест, который проверяет, что метод {@link UserRecommendationServiceImpl#isUserHaveMoreDebitDepositAmountThanWithdrawalAmountOnSameProducts(UUID)}
+     * возвращает {@code false}, когда сумма пополнений по всем продуктам типа DEBIT не превышает сумму трат по тем же продуктам.
+     */
     @Test
     public void UserDoesNotHaveMoreDeposit() {
         List<PriceSum> deposit = Arrays.asList(
@@ -231,7 +275,9 @@ public class UserRecommendationServiceImplTest {
         verify(productRepository, times(1)).findDebitWithdrawalSumByProduct(userId);
     }
 
-    // Проверяем, что метод getTotalSum возвращает 0, если входные данные пустые
+    /**
+     * Проверяем, что метод getTotalSum возвращает 0, если входные данные пустые.
+     */
     @Test
     void testGetTotalSumWithEmptyInputs() {
         List<PriceSum> withdrawal = new ArrayList<>();
@@ -242,7 +288,9 @@ public class UserRecommendationServiceImplTest {
         Assertions.assertEquals(0L, totalSum);
     }
 
-    // Проверяем, что метод isUserHaveCreditProduct возвращает true, когда пользователь имеет кредитный продукт
+    /**
+     * Проверяем, что метод isUserHaveCreditProduct возвращает true, когда пользователь имеет кредитный продукт.
+     */
     @Test
     void UserHasCreditProduct() {
         Mockito.when(productRepository.findCreditProductsByUser(userId)).thenReturn(1);
@@ -252,7 +300,9 @@ public class UserRecommendationServiceImplTest {
         Assertions.assertTrue(result);
     }
 
-    // Проверяем, что метод isUserHaveCreditProduct возвращает false, когда пользователь не имеет кредитный продукт
+    /**
+     * Проверяем, что метод isUserHaveCreditProduct возвращает false, когда пользователь не имеет кредитный продукт.
+     */
     @Test
     void UserDoesNotHaveCreditProduct() {
         Mockito.when(productRepository.findCreditProductsByUser(userId)).thenReturn(0);
@@ -262,7 +312,9 @@ public class UserRecommendationServiceImplTest {
         Assertions.assertFalse(result);
     }
 
-    // Проверяем, что метод isWithdrawalSumOnDebitProductsMoreThan100000 возвращает true, когда сумма списаний по дебетовым продуктам больше 100 000
+    /**
+     * Проверяем, что метод isUserHaveCreditProduct возвращает false, когда пользователь не имеет кредитный продукт.
+     */
     @Test
     void SumIsMoreThan100000() {
         Mockito.when(productRepository.findSumOfDebitWithdrawalProductsByUser(userId)).thenReturn(150000L);
@@ -272,7 +324,9 @@ public class UserRecommendationServiceImplTest {
         Assertions.assertTrue(result);
     }
 
-    // Проверяем, что метод isWithdrawalSumOnDebitProductsMoreThan100000 возвращает false, когда сумма списаний по дебетовым продуктам меньше 100 000
+    /**
+     * Проверяем, что метод isWithdrawalSumOnDebitProductsMoreThan100000 возвращает false, когда сумма списаний по дебетовым продуктам меньше 100 000.
+     */
     @Test
     void SumIsLessThan100000() {
         Mockito.when(productRepository.findSumOfDebitWithdrawalProductsByUser(userId)).thenReturn(50000L);

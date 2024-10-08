@@ -4,6 +4,12 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Утилитарный класс для отправки сообщений в Telegram.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @UtilityClass
 public class TelegramBotExecutionMessage {
 

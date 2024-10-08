@@ -13,6 +13,13 @@ import org.springframework.http.ResponseEntity;
 import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+/**
+ * Тестовый класс для {@link ManagementController}.
+ *
+ * @author Vladimir Kuznetsov
+ * @version 1.0
+ */
 class CacheControllerTest {
 
     @Mock
@@ -23,12 +30,19 @@ class CacheControllerTest {
 
     private ManagementController managementController;
 
+    /**
+     * Инициализация тестовой среды перед каждым тестом.
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
         managementController = new ManagementController(userRecommendationService, buildProperties);
     }
 
+    /**
+     * Тест метода {@link ManagementController#clearRecommendationCache()}.
+     * Проверяет, что метод очищает кэш рекомендаций и возвращает HTTP-ответ с кодом 200 (OK).
+     */
     @Test
     void clearRecommendationCache_shouldClearCacheAndReturnOk() {
         ResponseEntity<String> response = managementController.clearRecommendationCache();

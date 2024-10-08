@@ -5,6 +5,12 @@ import lombok.*;
 
 import java.util.UUID;
 
+/**
+ * Представляет сущность операции с транзакциями.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Entity
 @Getter
 @Setter

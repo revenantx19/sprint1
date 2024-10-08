@@ -22,6 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Тестовый класс для {@link UserRecommendationController}.
+ *
+ * @author Vladimir Kuznetsov
+ * @version 1.0
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserRecommendationControllerTest {
 
@@ -41,7 +47,11 @@ class UserRecommendationControllerTest {
         controller = new UserRecommendationController(userRecommendationService);
     }
 
-    // Проверяем, что ответ имеет статус 200 и тело ответа содержит созданный объект userRecommendation
+    /**
+     * Проверяем, что контроллер возвращает статус 200 и объект UserRecommendation, если пользователь найден.
+     *
+     * @throws Exception
+     */
     @Test
     void testGetRecommendations_UserFound() {
         UserRecommendation expectedUserRecommendation = new UserRecommendation(userId, List.of());
@@ -56,7 +66,11 @@ class UserRecommendationControllerTest {
         verify(userRecommendationService).getRecommendations(userId);
     }
 
-    // Проверяем, что ответ имеет статус 404 и тело ответа содержит null
+    /**
+     * Проверяем, что контроллер возвращает статус 404, если пользователь не найден.
+     *
+     * @throws Exception
+     */
     @Test
     void testGetRecommendations_UserNotFound() {
         when(userRecommendationService.getRecommendations(userId)).thenThrow(ChangeSetPersister.NotFoundException.class);
@@ -67,4 +81,3 @@ class UserRecommendationControllerTest {
         assertEquals(null, response.getBody());
     }
 }
-
