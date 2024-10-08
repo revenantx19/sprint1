@@ -2,6 +2,12 @@ package com.skypro.sprint1.util;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Утилита для работы с сообщениями для различных финансовых рекомендаций.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @UtilityClass
 public class RecommendationMessageUtil {
 

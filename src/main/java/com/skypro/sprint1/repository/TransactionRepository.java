@@ -6,6 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Репозиторий для работы с операционными транзакциями.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 

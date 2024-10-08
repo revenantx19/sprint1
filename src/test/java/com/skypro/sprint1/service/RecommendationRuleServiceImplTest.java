@@ -22,6 +22,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Тестовый класс для сервиса RecommendationRuleServiceImpl.
+ *
+ * @author Vladimir Kuznetsov
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 public class RecommendationRuleServiceImplTest {
 
@@ -35,6 +41,9 @@ public class RecommendationRuleServiceImplTest {
     private UUID ruleId;
     private RecommendationRule rule;
 
+    /**
+     * Настройка перед каждым тестом.
+     */
     @BeforeEach
     public void setUp() {
         // Здесь можно вставить любую настройку перед тестом
@@ -44,7 +53,9 @@ public class RecommendationRuleServiceImplTest {
         rule.setRule("sampleRule");
     }
 
-    // Тест shouldReturnRuleWhenExists: Проверяет, что метод getRule возвращает правило, если оно существует в репозитории.
+    /**
+     * Тест shouldReturnRuleWhenExists: Проверяет, что метод getRule возвращает правило, если оно существует в репозитории.
+     */
     @Test
     public void shouldReturnRuleWhenExists() {
         when(recommendationRuleRepository.findById(ruleId)).thenReturn(Optional.of(rule));
@@ -56,7 +67,9 @@ public class RecommendationRuleServiceImplTest {
         verify(recommendationRuleRepository, times(1)).findById(ruleId);
     }
 
-    // Тест shouldReturnEmptyWhenRuleDoesNotExist: Проверяет, что метод getRule возвращает пустое значение, если правило не найдено.
+    /**
+     * Тест shouldReturnEmptyWhenRuleDoesNotExist: Проверяет, что метод getRule возвращает пустое значение, если правило не найдено.
+     */
     @Test
     public void shouldReturnEmptyWhenRuleDoesNotExist() {
         when(recommendationRuleRepository.findById(ruleId)).thenReturn(Optional.empty());
@@ -67,7 +80,9 @@ public class RecommendationRuleServiceImplTest {
         verify(recommendationRuleRepository, times(1)).findById(ruleId);
     }
 
-    //Тест shouldReturnAllRules: Проверяет, что метод getRules возвращает все правила, находящиеся в репозитории.
+    /**
+     * Тест shouldReturnAllRules: Проверяет, что метод getRules возвращает все правила, находящиеся в репозитории.
+     */
     @Test
     public void shouldReturnAllRules() {
         RecommendationRule rule1 = new RecommendationRule();

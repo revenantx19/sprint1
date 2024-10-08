@@ -8,9 +8,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Репозиторий для работы с пользователями.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
+    /**
+     * Возвращает идентификатор пользователя по его имени.
+     *
+     * @param userName Имя пользователя.
+     * @return Идентификатор пользователя.
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT id FROM users " +
@@ -18,6 +30,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     )
     UUID findIdByUserName(String userName);
 
+    /**
+     * Возвращает полное имя пользователя по его имени.
+     *
+     * @param userName Имя пользователя.
+     * @return Полное имя пользователя.
+     */
     @Query(
             nativeQuery = true,
             value = "SELECT first_name AS firstName, last_name AS lastName FROM users " +

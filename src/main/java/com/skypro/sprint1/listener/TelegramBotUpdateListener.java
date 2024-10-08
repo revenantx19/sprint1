@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Класс обрабатывающий сообщения от Telegram бота.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,12 +29,21 @@ public class TelegramBotUpdateListener implements UpdatesListener {
 
     private final CommandFactory commandFactory;
 
-
+    /**
+     * Инициализация слушателя.
+     */
     @PostConstruct
     public void init() {
         bot.setUpdatesListener(this);
     }
 
+
+    /**
+     * Обработка обновлений.
+     *
+     * @param updates Список обновлений.
+     * @return Количество подтвержденных обновлений.
+     */
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {

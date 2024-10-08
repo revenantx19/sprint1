@@ -5,6 +5,12 @@ import lombok.*;
 
 import java.util.UUID;
 
+/**
+ * Представляет собой сущность продукта.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Entity
 @Data
 @NoArgsConstructor

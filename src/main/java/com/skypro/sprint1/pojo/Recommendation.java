@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Представляет рекомендацию продукта.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

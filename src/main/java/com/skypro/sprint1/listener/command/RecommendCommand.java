@@ -11,6 +11,12 @@ import com.skypro.sprint1.util.TelegramBotExecutionMessage;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Класс для вывода рекомендации товаров для заданного пользователя.
+ *
+ * @author Nikita Malinkin
+ * @version 1.0
+ */
 public class RecommendCommand extends ArgumentCommand {
 
     private final UserRepository userRepository;
@@ -22,6 +28,12 @@ public class RecommendCommand extends ArgumentCommand {
         this.userRecommendationService = userRecommendationService;
     }
 
+    /**
+     * Выполнение команды.
+     *
+     * @param bot    Телеграмм бот.
+     * @param chatId Идентификатор чата.
+     */
     @Override
     public void execute(TelegramBot bot, Long chatId) {
 
@@ -47,8 +59,16 @@ public class RecommendCommand extends ArgumentCommand {
         }
     }
 
+    /**
+     * Выводит сообщение о том, что рекомендации найдены.
+     *
+     * @param bot            Телеграмм бот.
+     * @param chatId         Идентификатор чата.
+     * @param recommendation Рекомендации.
+     * @param userName       Имя пользователя.
+     */
     private void recommendationFoundMessage(TelegramBot bot, Long chatId,
-                                UserRecommendation recommendation, String userName) {
+                                            UserRecommendation recommendation, String userName) {
 
         FullName fullName = userRepository.findFullNameByUserName(userName);
         String message = "Welcome, " + fullName.getFirstName() + " " + fullName.getLastName();
@@ -65,10 +85,23 @@ public class RecommendCommand extends ArgumentCommand {
         TelegramBotExecutionMessage.execute(bot, chatId, builder.toString());
     }
 
+    /**
+     * Выводит сообщение о том, что рекомендации не найдены.
+     *
+     * @param bot    Телеграмм бот.
+     * @param chatId Идентификатор чата.
+     */
     private void recommendationNotFoundMessage(TelegramBot bot, Long chatId) {
         TelegramBotExecutionMessage.execute(bot, chatId, "No available products");
     }
 
+    /**
+     * Выводит сообщение о том, что пользователь не найден.
+     *
+     * @param bot      Телеграмм бот.
+     * @param chatId   Идентификатор чата.
+     * @param userName Имя пользователя.
+     */
     private void userNotFoundMessage(TelegramBot bot, Long chatId, String userName) {
         String message = "No user found with name " + userName;
         TelegramBotExecutionMessage.execute(bot, chatId, message);

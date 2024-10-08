@@ -18,6 +18,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+/**
+ * Тестовый класс для {@link RecommendationRuleController}.
+ *
+ * @author Vladimir Kuznetsov
+ * @version 1.0
+ */
 class RecommendationRuleControllerTest {
 
     @Mock
@@ -29,6 +35,9 @@ class RecommendationRuleControllerTest {
     private RecommendationRule rule2;
     private UUID ruleId1;
 
+    /**
+     * Настройка перед каждым тестом.
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -39,7 +48,9 @@ class RecommendationRuleControllerTest {
         rule2 = new RecommendationRule("rule2", UUID.randomUUID(), "productName2", "productDescription2");
     }
 
-    // Проверяем, что метод createRule возвращает ответ 200
+    /**
+     * Тест метода {@link RecommendationRuleController#createRule(RecommendationRule)}, проверяющий возврат ответа 200 при успешном создании правила.
+     */
     @Test
     void shouldReturnOkWithCreatedRule() {
         when(recommendationRuleService.createRule(rule1)).thenReturn(Optional.of(rule1));
@@ -51,7 +62,9 @@ class RecommendationRuleControllerTest {
         verify(recommendationRuleService).createRule(rule1);
     }
 
-    // Проверяем, что метод createRule возвращает ответ 404
+    /**
+     * Тест метода {@link RecommendationRuleController#createRule(RecommendationRule)}, проверяющий возврат ответа 200 при успешном создании правила.
+     */
     @Test
     void shouldReturnNotFoundWhenRuleNotCreated() {
         when(recommendationRuleService.createRule(rule1)).thenReturn(Optional.empty());
@@ -63,7 +76,9 @@ class RecommendationRuleControllerTest {
         verify(recommendationRuleService).createRule(rule1);
     }
 
-    // Проверяем, что метод deleteRule вызывает сервис удаления
+    /**
+     * Тест метода {@link RecommendationRuleController#deleteRule(UUID)}, проверяющий вызов сервиса удаления правила.
+     */
     @Test
     void deleteRuleTest() {
         controller.deleteRule(ruleId1);
@@ -71,8 +86,11 @@ class RecommendationRuleControllerTest {
         verify(recommendationRuleService).deleteRule(ruleId1);
     }
 
-    // Проверяем, что метод getRule возвращает ответ 200
-    @Test void shouldReturnOkWithFoundRule() {
+    /**
+     * Тест метода {@link RecommendationRuleController#getRule(UUID)}, проверяющий возврат ответа 200 при успешном получении правила.
+     */
+    @Test
+    void shouldReturnOkWithFoundRule() {
         when(recommendationRuleService.getRule(ruleId1)).thenReturn(Optional.of(rule1));
 
         ResponseEntity<RecommendationRule> response = controller.getRule(ruleId1);
@@ -82,7 +100,9 @@ class RecommendationRuleControllerTest {
         verify(recommendationRuleService).getRule(ruleId1);
     }
 
-    // Проверяем, что метод getRule возвращает ответ 404
+    /**
+     * Тест метода {@link RecommendationRuleController#getRule(UUID)}, проверяющий возврат ответа 404 при неуспешном получении правила.
+     */
     @Test
     void shouldReturnNotFoundWhenRuleNotFound() {
         when(recommendationRuleService.getRule(ruleId1)).thenReturn(Optional.empty());
@@ -94,7 +114,9 @@ class RecommendationRuleControllerTest {
         verify(recommendationRuleService).getRule(ruleId1);
     }
 
-    // Проверяем, что метод getRules возвращает список всех правил
+    /**
+     * Тест получения всех рекомендационных правил.
+     */
     @Test
     void shouldReturnAllRules() {
         when(recommendationRuleService.getRules()).thenReturn(Arrays.asList(rule1, rule2));
